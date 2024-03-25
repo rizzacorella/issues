@@ -1,5 +1,6 @@
 import issues from '../data/issues.js'
 import { Issue } from '../models/issue.js'
+import { CustomError, customErrors } from '../middlewares/errorHandler.js'
 
 export interface IssueAttrs {
   title: string
@@ -31,11 +32,18 @@ export class IssueService {
   }
 
   public read = (id: number): Issue | undefined => {
-    return issues.find(issue => issue.id === id)
+    const issue = issues.find(issue => issue.id === id)
+    if (!issue) {
+      throw new CustomError(customErrors.ISSUE_NOT_FOUND)
+    }
+    return issue
   }
 
   public update = (id: number, newIssue: IssueAttrs): Issue | undefined => {
     const index = issues.findIndex(issue => issue.id === id)
+    if (index < 0) {
+      throw new CustomError(customErrors.ISSUE_NOT_FOUND)
+    }
     const { title, description } = newIssue
     issues[index]= {
       id,
@@ -48,6 +56,9 @@ export class IssueService {
 
   public delete = (id: number): void => {
     const index = issues.findIndex(issue => issue.id === id)
+    if (index < 0) {
+      throw new CustomError(customErrors.ISSUE_NOT_FOUND)
+    }
     console.info('Issue to delete', issues[index])
     issues.splice(index, 1)
     console.info('Deleted')

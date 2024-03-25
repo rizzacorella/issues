@@ -10,37 +10,67 @@ export class IssueController {
   }
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const issue = this.issueService.create(req.body)
-    res.json(issue)
+    try {
+      const issue = this.issueService.create(req.body)
+      res.json(issue)
+    } catch (err) {
+      this.propagateError(err, next)
+    }
   }
 
   public list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    res.json(this.issueService.list())
+    try {
+      res.json(this.issueService.list())
+    } catch (err) {
+      this.propagateError(err, next)
+    }
   }
 
   public read = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.params.id) {
-      return next(new CustomError(customErrors.ID_ERROR))
+    try {
+      if (!req.params.id) {
+        return next(new CustomError(customErrors.ID_ERROR))
+      }
+      const issue = this.issueService.read(parseInt(req.params.id))
+      res.json(issue)
+    } catch (err) {
+      this.propagateError(err, next)
     }
-    const issue = this.issueService.read(parseInt(req.params.id))
-    res.json(issue)
   }
 
   public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.params.id) {
-      return next(new CustomError(customErrors.ID_ERROR))
+    try {
+      if (!req.params.id) {
+        return next(new CustomError(customErrors.ID_ERROR))
+      }
+      const issue = this.issueService.update(parseInt(req.params.id), req.body)
+      res.json(issue)
+    } catch (err) {
+      this.propagateError(err, next)
     }
-    const issue = this.issueService.update(parseInt(req.params.id), req.body)
-    res.json(issue)
   }
 
   public delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (!req.params.id) {
-      return next(new CustomError(customErrors.ID_ERROR))
+    try {
+      if (!req.params.id) {
+        return next(new CustomError(customErrors.ID_ERROR))
+      }
+      this.issueService.delete(parseInt(req.params.id))
+      res.json({
+        message: 'Issue deleted.'
+      })
+    } catch (err) {
+      this.propagateError(err, next)
     }
-    this.issueService.delete(parseInt(req.params.id))
-    res.json({
-      message: 'Issue deleted.'
-    })
+  }
+
+  private propagateError = (err: any, next: NextFunction) => {
+    console.error(err)
+    if (err instanceof CustomError) {
+      next(err)
+    } else {
+      const { INTERNAL_SERVER_ERROR: serverError } = customErrors
+      next(new CustomError(serverError))
+    }
   }
 }

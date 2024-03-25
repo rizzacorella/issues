@@ -23,6 +23,16 @@ export const customErrors = {
     message: 'Invalid ID',
     status: 400,
   },
+  INTERNAL_SERVER_ERROR: {
+    code: 'INTERNAL_SERVER_ERROR',
+    message: 'Something went wrong. Please try again later.',
+    status: 500,
+  },
+  ISSUE_NOT_FOUND: {
+    code: 'ISSUE_NOT_FOUND',
+    message: 'Issue was not found',
+    status: 404,
+  }
 }
 
 export const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
