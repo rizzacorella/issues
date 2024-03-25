@@ -13,6 +13,10 @@ export class IssueService {
     this.lastId = 2
   }
 
+  public list = (): Issue[] => {
+    return issues
+  }
+
   public create = (newIssue: IssueAttrs): Issue => {
     const { title, description } = newIssue
     const issueToSave = {

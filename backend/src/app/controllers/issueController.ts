@@ -14,6 +14,10 @@ export class IssueController {
     res.json(issue)
   }
 
+  public list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    res.json(this.issueService.list())
+  }
+
   public read = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (!req.params.id) {
       return next(new CustomError(customErrors.ID_ERROR))
